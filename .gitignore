@@ -8,6 +8,7 @@
 /var/
 /vendor/
 /pg_data/
+/app/var/
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###

@@ -4,3 +4,4 @@
 d14bc6,172.18.0.1,GET,http://localhost:15600/ping,1692728390,,500
 b66bb7,172.18.0.1,GET,http://localhost:15600/ping,1692728390,eb16c0,500
 eb16c0,172.18.0.1,GET,http://localhost:15600/ping,1692728390,,500
+d971af,172.18.0.1,POST,http://localhost:15600/booking,1693126631,,200
