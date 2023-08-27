@@ -16,6 +16,6 @@ if (!\class_exists(App_KernelDevDebugContainer::class, false)) {
 
 return new \ContainerREfDyL2\App_KernelDevDebugContainer([
     'container.build_hash' => 'REfDyL2',
-    'container.build_id' => '69ad0b8c',
-    'container.build_time' => 1693126470,
+    'container.build_id' => '7528efc5',
+    'container.build_time' => 1693133687,
 ], __DIR__.\DIRECTORY_SEPARATOR.'ContainerREfDyL2');

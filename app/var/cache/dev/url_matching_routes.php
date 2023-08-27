@@ -14,7 +14,8 @@ return [
         '/_profiler/phpinfo' => [[['_route' => '_profiler_phpinfo', '_controller' => 'web_profiler.controller.profiler::phpinfoAction'], null, null, null, false, false, null]],
         '/_profiler/xdebug' => [[['_route' => '_profiler_xdebug', '_controller' => 'web_profiler.controller.profiler::xdebugAction'], null, null, null, false, false, null]],
         '/_profiler/open' => [[['_route' => '_profiler_open_file', '_controller' => 'web_profiler.controller.profiler::openAction'], null, null, null, false, false, null]],
-        '/booking' => [[['_route' => 'booking_add', '_controller' => 'App\\Controller\\BookingController::addOffice'], null, ['POST' => 0], null, false, false, null]],
+        '/booking/get' => [[['_route' => 'booking_get', '_controller' => 'App\\Controller\\BookingController::getBookings'], null, ['GET' => 0], null, false, false, null]],
+        '/booking/add' => [[['_route' => 'booking_add', '_controller' => 'App\\Controller\\BookingController::addBooking'], null, ['POST' => 0], null, false, false, null]],
     ],
     [ // $regexpList
         0 => '{^(?'
@@ -33,6 +34,7 @@ return [
                         .'|(*:159)'
                     .')'
                 .')'
+                .'|/booking/get/([^/]++)(*:190)'
             .')/?$}sDu',
     ],
     [ // $dynamicRoutes
@@ -42,8 +44,9 @@ return [
         116 => [[['_route' => '_profiler_router', '_controller' => 'web_profiler.controller.router::panelAction'], ['token'], null, null, false, false, null]],
         136 => [[['_route' => '_profiler_exception', '_controller' => 'web_profiler.controller.exception_panel::body'], ['token'], null, null, false, false, null]],
         149 => [[['_route' => '_profiler_exception_css', '_controller' => 'web_profiler.controller.exception_panel::stylesheet'], ['token'], null, null, false, false, null]],
-        159 => [
-            [['_route' => '_profiler', '_controller' => 'web_profiler.controller.profiler::panelAction'], ['token'], null, null, false, true, null],
+        159 => [[['_route' => '_profiler', '_controller' => 'web_profiler.controller.profiler::panelAction'], ['token'], null, null, false, true, null]],
+        190 => [
+            [['_route' => 'booking_get_by_id', '_controller' => 'App\\Controller\\BookingController::getBooking'], ['id'], ['GET' => 0], null, false, true, null],
             [null, null, null, null, false, false, 0],
         ],
     ],

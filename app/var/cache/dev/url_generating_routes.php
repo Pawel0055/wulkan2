@@ -16,5 +16,7 @@ return [
     '_profiler_router' => [['token'], ['_controller' => 'web_profiler.controller.router::panelAction'], [], [['text', '/router'], ['variable', '/', '[^/]++', 'token', true], ['text', '/_profiler']], [], [], []],
     '_profiler_exception' => [['token'], ['_controller' => 'web_profiler.controller.exception_panel::body'], [], [['text', '/exception'], ['variable', '/', '[^/]++', 'token', true], ['text', '/_profiler']], [], [], []],
     '_profiler_exception_css' => [['token'], ['_controller' => 'web_profiler.controller.exception_panel::stylesheet'], [], [['text', '/exception.css'], ['variable', '/', '[^/]++', 'token', true], ['text', '/_profiler']], [], [], []],
-    'booking_add' => [[], ['_controller' => 'App\\Controller\\BookingController::addOffice'], [], [['text', '/booking']], [], [], []],
+    'booking_get' => [[], ['_controller' => 'App\\Controller\\BookingController::getBookings'], [], [['text', '/booking/get']], [], [], []],
+    'booking_get_by_id' => [['id'], ['_controller' => 'App\\Controller\\BookingController::getBooking'], [], [['variable', '/', '[^/]++', 'id', true], ['text', '/booking/get']], [], [], []],
+    'booking_add' => [[], ['_controller' => 'App\\Controller\\BookingController::addBooking'], [], [['text', '/booking/add']], [], [], []],
 ];
