@@ -7,6 +7,7 @@ use App\Entity\ReceptionHours;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,29 +18,39 @@ use Symfony\Component\Serializer\SerializerInterface;
 class BookingController extends AbstractController
 {
     public function __construct(private SerializerInterface    $serializer,
-                                private EntityManagerInterface $entityManager)
+                                private EntityManagerInterface $entityManager,
+                                private PaginatorInterface $paginator)
     {
     }
 
     #[Route('/get', name: 'get', methods:['get'] )]
-    public function getBookings(): JsonResponse
+    public function getBookings(Request $request): JsonResponse
     {
         $bookings = $this->entityManager
             ->getRepository(Booking::class)
             ->findAll();
+
+        $pagination = $this->paginator->paginate(
+            $bookings,
+            $request->query->getInt('page', 1), 
+            10 
+        );
    
         $data = [];
    
-        foreach ($bookings as $booking) {
+        foreach ($pagination->getItems() as $pagin) {
            $data[] = [
-               'id' => $booking->getId(),
-               'registrationNumber' => $booking->getRegistrationNumber(),
-               'date' => $booking->getDate()->format('Y-m-d'),
-               'time' => $booking->getReceptionHours()->getTime()->format('H:i')
+               'id' => $pagin->getId(),
+               'registrationNumber' => $pagin->getRegistrationNumber(),
+               'date' => $pagin->getDate()->format('Y-m-d'),
+               'time' => $pagin->getReceptionHours()->getTime()->format('H:i')
            ];
         }
-   
-        return $this->json($data);
+
+        return $this->json(['data' => $data,
+         'totalItemCount' => $pagination->getTotalItemCount(),
+         'currentPage' => $pagination->getCurrentPageNumber()
+        ]);
     }
 
     #[Route('/get/{id}', name: 'get_by_id', methods:['get'] )]
@@ -87,5 +98,29 @@ class BookingController extends AbstractController
         ];
            
         return $this->json($data);
+    }
+
+    #[Route('/freedates', name: 'free_dates', methods:['post'] )]
+    public function checkFreeDates(Request $request): JsonResponse
+    {
+        $date = new DateTime($request->request->get('date'));
+        $busyTimes = $this->entityManager
+            ->getRepository(Booking::class)
+            ->findBusyTimes($date->format('Y-m-d'));
+        $arrayUnique = array_unique(array_column($busyTimes, 'id'));
+
+        $freeDates = $this->entityManager
+        ->getRepository(ReceptionHours::class)
+        ->findFreeDates($arrayUnique);
+        
+        foreach ($freeDates as $pagin) {
+            $data[] = [
+                'time' => $pagin["time"]->format('H:i')
+            ];
+         }
+ 
+         return $this->json([
+            'data' => $data
+         ]);
     }
 }

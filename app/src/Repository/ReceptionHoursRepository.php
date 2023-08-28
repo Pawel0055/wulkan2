@@ -21,28 +21,17 @@ class ReceptionHoursRepository extends ServiceEntityRepository
         parent::__construct($registry, ReceptionHours::class);
     }
 
-//    /**
-//     * @return ReceptionHours[] Returns an array of ReceptionHours objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('r.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?ReceptionHours
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function findFreeDates($busyTimes)
+   {
+        $qb = $this->createQueryBuilder('r')
+           ->select('r.time');
+           if($busyTimes) {
+            $qb
+                ->andWhere('r.id NOT IN (:ids)')
+                ->setParameter('ids', $busyTimes);
+           }
+           $query = $qb->getQuery();
+           
+       return $query->execute();
+   }
 }
