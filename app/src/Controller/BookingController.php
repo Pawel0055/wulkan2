@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Booking;
+use App\Entity\ReceptionHours;
+use DateTime;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,7 +34,8 @@ class BookingController extends AbstractController
            $data[] = [
                'id' => $booking->getId(),
                'registrationNumber' => $booking->getRegistrationNumber(),
-               'date' => $booking->getDate()->format('Y-m-d')
+               'date' => $booking->getDate()->format('Y-m-d'),
+               'time' => $booking->getReceptionHours()->getTime()->format('H:i')
            ];
         }
    
@@ -50,7 +53,8 @@ class BookingController extends AbstractController
         $data = [
             'id' => $booking->getId(),
             'registrationNumber' => $booking->getRegistrationNumber(),
-            'date' => $booking->getDate()->format('Y-m-d')
+            'date' => $booking->getDate()->format('Y-m-d'),
+            'time' => $booking->getReceptionHours()->getTime()->format('H:i')
         ];
         return $this->json($data);
         } else {
@@ -61,9 +65,16 @@ class BookingController extends AbstractController
     #[Route('/add', name: 'add', methods:['post'] )]
     public function addBooking(Request $request): JsonResponse
     {
+        $receptionHour = $this->entityManager
+            ->getRepository(ReceptionHours::class)
+            ->findOneByTime(new DateTime($request->request->get('time')));
+        if(!$receptionHour) {
+            return $this->json(['error' => 'Niepoprawne dane']);
+        }
         $booking = new Booking();
         $booking->setRegistrationNumber($request->request->get('registrationNumber'));
         $booking->setDate(new DateTimeImmutable($request->request->get('date')));
+        $booking->setReceptionHours($receptionHour);
 
         $this->entityManager->persist($booking);
         $this->entityManager->flush();
@@ -72,6 +83,7 @@ class BookingController extends AbstractController
             'id' => $booking->getId(),
             'registrationNumber' => $booking->getRegistrationNumber(),
             'date' => $booking->getDate(),
+            'time' => $booking->getReceptionHours()->getTime()->format('H:i')
         ];
            
         return $this->json($data);

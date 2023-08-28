@@ -16,6 +16,7 @@ return [
         '/_profiler/open' => [[['_route' => '_profiler_open_file', '_controller' => 'web_profiler.controller.profiler::openAction'], null, null, null, false, false, null]],
         '/booking/get' => [[['_route' => 'booking_get', '_controller' => 'App\\Controller\\BookingController::getBookings'], null, ['GET' => 0], null, false, false, null]],
         '/booking/add' => [[['_route' => 'booking_add', '_controller' => 'App\\Controller\\BookingController::addBooking'], null, ['POST' => 0], null, false, false, null]],
+        '/reception/add' => [[['_route' => 'reception_add', '_controller' => 'App\\Controller\\ReceptionHoursController::addReceptionHours'], null, ['POST' => 0], null, false, false, null]],
     ],
     [ // $regexpList
         0 => '{^(?'

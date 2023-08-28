@@ -19,4 +19,5 @@ return [
     'booking_get' => [[], ['_controller' => 'App\\Controller\\BookingController::getBookings'], [], [['text', '/booking/get']], [], [], []],
     'booking_get_by_id' => [['id'], ['_controller' => 'App\\Controller\\BookingController::getBooking'], [], [['variable', '/', '[^/]++', 'id', true], ['text', '/booking/get']], [], [], []],
     'booking_add' => [[], ['_controller' => 'App\\Controller\\BookingController::addBooking'], [], [['text', '/booking/add']], [], [], []],
+    'reception_add' => [[], ['_controller' => 'App\\Controller\\ReceptionHoursController::addReceptionHours'], [], [['text', '/reception/add']], [], [], []],
 ];
