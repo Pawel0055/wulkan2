@@ -11,6 +11,7 @@ use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use App\Component\Mailer\Mailer as Mailer;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -19,7 +20,8 @@ class BookingController extends AbstractController
 {
     public function __construct(private SerializerInterface    $serializer,
                                 private EntityManagerInterface $entityManager,
-                                private PaginatorInterface $paginator)
+                                private PaginatorInterface $paginator,
+                                private Mailer $mailer)
     {
     }
 
@@ -96,6 +98,8 @@ class BookingController extends AbstractController
             'date' => $booking->getDate(),
             'time' => $booking->getReceptionHours()->getTime()->format('H:i')
         ];
+
+        $this->mailer->sendAddBookingtInformation('test@test.pl');
            
         return $this->json($data);
     }
