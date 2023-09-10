@@ -24,10 +24,12 @@ class BookingConfirmedSubscriber implements EventSubscriberInterface
 
     public function onBookingConfirmed(BookingConfirmedEvent $event)
     {
+        $time = $event->getReceptionHour()->getTime()->format('H:i');
+        $date = $event->getBooking()->getDate()->format('Y-m-d');
         return $this->sendEmailMessage(
             'Otrzymałeś nową wiadomość (Dodanie terminu)',
             'test@test.pl',
-            'Nowy termin został pomyślnie dodany.'
+            'Nowy termin ' . $date . ' na godzine ' . $time . ' został pomyślnie dodany.'
         );
     }
 

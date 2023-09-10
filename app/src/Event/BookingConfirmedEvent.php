@@ -27,6 +27,6 @@ class BookingConfirmedEvent extends Event
 
     public function getReceptionHour()
     {
-        $this->booking->getReceptionHours();
+        return $this->booking->getReceptionHours();
     }
 }
