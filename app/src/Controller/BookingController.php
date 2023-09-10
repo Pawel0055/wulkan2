@@ -11,7 +11,6 @@ use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use App\Component\Mailer\Mailer as Mailer;
 use App\Event\BookingConfirmedEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,8 +21,7 @@ class BookingController extends AbstractController
 {
     public function __construct(private SerializerInterface    $serializer,
                                 private EntityManagerInterface $entityManager,
-                                private PaginatorInterface $paginator,
-                                private Mailer $mailer)
+                                private PaginatorInterface $paginator)
     {
     }
 
@@ -100,8 +98,6 @@ class BookingController extends AbstractController
             'date' => $booking->getDate(),
             'time' => $booking->getReceptionHours()->getTime()->format('H:i')
         ];
-
-        //$this->mailer->sendAddBookingtInformation('test@test.pl');
 
         $event = new BookingConfirmedEvent($booking);
         $dispatcher->dispatch($event, BookingConfirmedEvent::NAME);
