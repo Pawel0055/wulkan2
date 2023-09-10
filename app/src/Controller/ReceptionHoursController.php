@@ -2,45 +2,40 @@
 
 namespace App\Controller;
 
-use App\Entity\ReceptionHours;
-use DateTime;
+use App\Dto\Request\ReceptionRequestDto;
+use App\Service\ReceptionService;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/reception', name: 'reception_')]
 class ReceptionHoursController extends AbstractController
 {
     public function __construct(private SerializerInterface    $serializer,
-                                private EntityManagerInterface $entityManager)
+    private ValidatorInterface     $validator,
+    private ReceptionService $receptionService,
+    private EntityManagerInterface $entityManager)
     {
     }
 
     #[Route('/add', name: 'add', methods:['post'] )]
-    public function addReceptionHours(Request $request): JsonResponse
+    public function addReceptionHours(Request $request)
     {
-        $receptionHour = $this->entityManager
-            ->getRepository(ReceptionHours::class)
-            ->findOneByTime(new DateTime($request->request->get('time')));
-            
-        if($receptionHour) {
-            return $this->json(['error' => 'Taka godzina już istnieje.']);
+        try {
+            /** @var ReceptionRequestDto $bookingRequest */
+            $receptionRequest = $this->serializer->deserialize(
+                $request->getContent(),
+                ReceptionRequestDto::class,
+                'json'
+            );
+            $receptionHours = $this->receptionService->addReceptionHours($receptionRequest);
+        } catch (Exception $e) {
+            echo $e->getMessage() . "\n";
         }
-
-        $receptionHour = new ReceptionHours();
-        $receptionHour->setTime(new DateTime($request->request->get('time')));
-
-        $this->entityManager->persist($receptionHour);
-        $this->entityManager->flush();
-   
-        $data =  [
-            'id' => $receptionHour->getId(),
-            'time' => $receptionHour->getTime()->format('H:i')
-        ];
-           
-        return $this->json($data);
+        return $this->json($receptionHours);
     }
 }

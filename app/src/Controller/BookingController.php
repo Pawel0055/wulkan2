@@ -5,22 +5,23 @@ namespace App\Controller;
 use App\Entity\Booking;
 use App\Entity\ReceptionHours;
 use DateTime;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use App\Event\BookingConfirmedEvent;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use App\Service\BookingService;
+use Exception;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use App\Dto\Request\BookingRequestDto;
 
 #[Route('/booking', name: 'booking_')]
 class BookingController extends AbstractController
 {
     public function __construct(private SerializerInterface    $serializer,
                                 private EntityManagerInterface $entityManager,
+                                private BookingService $bookingService,
                                 private PaginatorInterface $paginator)
     {
     }
@@ -76,39 +77,20 @@ class BookingController extends AbstractController
     }
 
     #[Route('/add', name: 'add', methods:['post'] )]
-    public function addBooking(Request $request, EventDispatcherInterface $dispatcher): JsonResponse
+    public function addBooking(Request $request): JsonResponse
     {
-        $receptionHour = $this->entityManager
-            ->getRepository(ReceptionHours::class)
-            ->findOneByTime(new DateTime($request->request->get('time')));
-
-        $registrationNumber = $this->entityManager
-        ->getRepository(Booking::class)
-        ->findOneByRegistrationNumber($request->request->get('registrationNumber'));
-        
-        if(!$receptionHour || $registrationNumber) {
-            return $this->json(['error' => 'Niepoprawne dane']);
+        try {
+            /** @var BookingRequestDto $bookingRequest */
+            $bookingRequest = $this->serializer->deserialize(
+                $request->getContent(),
+                BookingRequestDto::class,
+                'json'
+            );
+            $booking = $this->bookingService->addBooking($bookingRequest);
+        } catch (Exception $e) {
+            echo $e->getMessage() . "\n";
         }
-
-        $booking = new Booking();
-        $booking->setRegistrationNumber($request->request->get('registrationNumber'));
-        $booking->setDate(new DateTimeImmutable($request->request->get('date')));
-        $booking->setReceptionHours($receptionHour);
-
-        $this->entityManager->persist($booking);
-        $this->entityManager->flush();
-   
-        $data =  [
-            'id' => $booking->getId(),
-            'registrationNumber' => $booking->getRegistrationNumber(),
-            'date' => $booking->getDate(),
-            'time' => $booking->getReceptionHours()->getTime()->format('H:i')
-        ];
-
-        $event = new BookingConfirmedEvent($booking);
-        $dispatcher->dispatch($event, BookingConfirmedEvent::NAME);
-           
-        return $this->json($data);
+        return $this->json($booking);
     }
 
     #[Route('/remove/{id}', name: 'remove', methods:['delete'] )]
