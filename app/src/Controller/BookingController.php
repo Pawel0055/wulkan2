@@ -104,6 +104,22 @@ class BookingController extends AbstractController
         return $this->json($data);
     }
 
+    #[Route('/remove/{id}', name: 'remove', methods:['delete'] )]
+    public function removeBooking(int $id): JsonResponse
+    {
+        $booking = $this->entityManager
+            ->getRepository(Booking::class)
+            ->findOneById($id);
+
+        if(!$booking) {
+            return $this->json(['error' => 'Niepoprawne dane']);
+        }
+        $this->entityManager->remove($booking);
+        $this->entityManager->flush();
+
+        return $this->json('Rezerwacja usunieta');
+    }
+
     #[Route('/freedates', name: 'free_dates', methods:['post'] )]
     public function checkFreeDates(Request $request): JsonResponse
     {
@@ -117,9 +133,9 @@ class BookingController extends AbstractController
         ->getRepository(ReceptionHours::class)
         ->findFreeDates($arrayUnique);
         
-        foreach ($freeDates as $pagin) {
+        foreach ($freeDates as $freeDate) {
             $data[] = [
-                'time' => $pagin["time"]->format('H:i')
+                'time' => $freeDate["time"]->format('H:i')
             ];
          }
  
