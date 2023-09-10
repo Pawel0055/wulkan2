@@ -12,6 +12,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Component\Mailer\Mailer as Mailer;
+use App\Event\BookingConfirmedEvent;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -76,7 +78,7 @@ class BookingController extends AbstractController
     }
 
     #[Route('/add', name: 'add', methods:['post'] )]
-    public function addBooking(Request $request): JsonResponse
+    public function addBooking(Request $request, EventDispatcherInterface $dispatcher): JsonResponse
     {
         $receptionHour = $this->entityManager
             ->getRepository(ReceptionHours::class)
@@ -99,7 +101,10 @@ class BookingController extends AbstractController
             'time' => $booking->getReceptionHours()->getTime()->format('H:i')
         ];
 
-        $this->mailer->sendAddBookingtInformation('test@test.pl');
+        //$this->mailer->sendAddBookingtInformation('test@test.pl');
+
+        $event = new BookingConfirmedEvent($booking);
+        $dispatcher->dispatch($event, BookingConfirmedEvent::NAME);
            
         return $this->json($data);
     }
