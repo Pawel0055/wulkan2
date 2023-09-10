@@ -81,9 +81,15 @@ class BookingController extends AbstractController
         $receptionHour = $this->entityManager
             ->getRepository(ReceptionHours::class)
             ->findOneByTime(new DateTime($request->request->get('time')));
-        if(!$receptionHour) {
+
+        $registrationNumber = $this->entityManager
+        ->getRepository(Booking::class)
+        ->findOneByRegistrationNumber($request->request->get('registrationNumber'));
+        
+        if(!$receptionHour || $registrationNumber) {
             return $this->json(['error' => 'Niepoprawne dane']);
         }
+
         $booking = new Booking();
         $booking->setRegistrationNumber($request->request->get('registrationNumber'));
         $booking->setDate(new DateTimeImmutable($request->request->get('date')));
