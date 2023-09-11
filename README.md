@@ -6,7 +6,7 @@
     * `php bin/console d:m:m` - migracja bazy danych
 
 Przykładowe requesty i response:
-- Strzał POST pod adresem localhost:15600/reception/add z body (json) dodaje nową możliwą godzinę umówienia wizyty:
+- Strzał POST pod adresem `localhost:15600/reception/add` z body (json) dodaje nową możliwą godzinę umówienia wizyty:
 {
     "time": "11:20"
 }
@@ -17,13 +17,13 @@ Przykładowe requesty i response:
     "time": "11:20"
 }
 
-- Strzał POST pod adresem localhost:15600/booking/add z body (json) dodaje nową rezerwację:
+- Strzał `POST` pod adresem `localhost:15600/booking/add` z body (json) dodaje nową rezerwację:
 {
     "registrationNumber" : "ZS1111",
     "date": "2023-12-12",
     "time": "11:20"
 }
-- Przykładowy response:
+Przykładowy response:
 {
     "id": 172,
     "registrationNumber": "ZS785AJsadaasa",
@@ -31,9 +31,9 @@ Przykładowe requesty i response:
     "time": "19:20"
 }
 
-- Strzał POST pod adresem localhost:15600/booking/freedates z podanym niżej form data np. key date, value 2012-12-12 w postman pokazuje nam dostępne wolne godziny w dany dzień:
+- Strzał `POST` pod adresem `localhost:15600/booking/freedates` z podanym niżej form data np. key date, value 2012-12-12 w postman pokazuje nam dostępne wolne godziny w dany dzień:
 
--Przykład response:
+Przykład response:
 {
     "data": [
         {
@@ -63,8 +63,8 @@ Przykładowe requesty i response:
     ]
 }
 
-- Strzał GET pod adresem localhost:15600/booking/get?page=5 ukazuje nam 5 stronę dodanych rezerwacji:
-- Przykład response:
+- Strzał `GET` pod adresem `localhost:15600/booking/get?page=5` ukazuje nam 5 stronę dodanych rezerwacji:
+Przykład response:
 {
     "data": [
         {
