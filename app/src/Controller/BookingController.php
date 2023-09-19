@@ -121,6 +121,10 @@ class BookingController extends AbstractController
         $freeDates = $this->entityManager
         ->getRepository(ReceptionHours::class)
         ->findFreeDates($arrayUnique);
+
+        if(!$freeDates) {
+            return $this->json(['error' => 'Niepoprawne dane']);
+        }
         
         foreach ($freeDates as $freeDate) {
             $data[] = [
