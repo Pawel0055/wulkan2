@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\ReceptionHours;
+use App\Repository\ReceptionHoursRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -13,6 +14,7 @@ class ReceptionService
     public function __construct(
         private EntityManagerInterface $entityManager,
         private ValidatorInterface     $validator,
+        private ReceptionHoursRepository $receptionHoursRepository
     )
     {
     }
@@ -25,8 +27,7 @@ class ReceptionService
             return new Response($errorsString);
         }
 
-        $receptionHour = $this->entityManager
-            ->getRepository(ReceptionHours::class)
+        $receptionHour = $this->receptionHoursRepository
             ->findOneByTime(new DateTime($request->getTime()));
             
         if($receptionHour) {
