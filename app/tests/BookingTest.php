@@ -36,17 +36,13 @@ class BookingTest extends WebTestCase
         $entityManager->expects($this->once())->method('persist');
         $entityManager->expects($this->once())->method('flush');
 
-        // Stwórz obiekt BookingService i wywołaj metodę addBooking
         $bookingService = new BookingService($entityManager, $validator, $eventDispatcher, $bookingRepository, $receptionHoursRepository);
         $result = $bookingService->addBooking($bookingRequest);
-
-        // Oczekiwany wynik
         $expectedResult = [
             'id' => null,
             'registrationNumber' => $sampleData['registrationNumber']
         ];
 
-        // Sprawdź, czy wynik jest zgodny z oczekiwaniem
         $this->assertEquals($expectedResult, $result);
     }
 }
