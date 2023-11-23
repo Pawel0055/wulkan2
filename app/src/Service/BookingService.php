@@ -3,22 +3,24 @@
 namespace App\Service;
 
 use App\Entity\Booking;
-use App\Entity\ReceptionHours;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use App\Event\BookingConfirmedEvent;
+use App\Repository\BookingRepository;
+use App\Repository\ReceptionHoursRepository;
 
 class BookingService
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
         private ValidatorInterface     $validator,
-        private EventDispatcherInterface $dispatcher
+        private EventDispatcherInterface $dispatcher,
+        private BookingRepository $bookingRepository,
+        private ReceptionHoursRepository $receptionHoursRepository
     )
     {
     }
@@ -30,21 +32,18 @@ class BookingService
             $errorsString = (string) $errors;
             return new Response($errorsString);
         }
-    
-        $receptionHour = $this->entityManager
-            ->getRepository(ReceptionHours::class)
+
+        $receptionHour = $this->receptionHoursRepository
             ->findOneByTime(new DateTime($request->getTime()));
-    
-        $registrationNumber = $this->entityManager
-        ->getRepository(Booking::class)
-        ->findOneByRegistrationNumber($request->getRegistrationNumber());
-        
+
+        $registrationNumber = $this->bookingRepository
+            ->findOneByRegistrationNumber($request->getRegistrationNumber());
+          
         if(!$receptionHour || $registrationNumber) {
             return new Response('Niepoprawne dane.');
         }
 
-        $busyBooking = $this->entityManager
-        ->getRepository(Booking::class)
+        $busyBooking = $this->bookingRepository
         ->findBy([
             'receptionHours' => $receptionHour,
             'date' => new DateTimeImmutable($request->getDate())
@@ -64,9 +63,7 @@ class BookingService
    
         $data =  [
             'id' => $booking->getId(),
-            'registrationNumber' => $booking->getRegistrationNumber(),
-            'date' => $booking->getDate(),
-            'time' => $booking->getReceptionHours()->getTime()->format('H:i')
+            'registrationNumber' => $booking->getRegistrationNumber()
         ];
 
         $event = new BookingConfirmedEvent($booking);
